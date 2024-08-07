@@ -26,6 +26,10 @@ mongo_client = MongoClient('mongodb://localhost:27017/')
 db = mongo_client['phishing_detection']  # Database name
 logs_collection = db['logs']  # Collection name
 
+# Ensure default account is set
+if not w3.eth.default_account:
+    w3.eth.default_account = w3.eth.accounts[0]
+
 def extract_features(df, type_):
     features = pd.DataFrame()
     if type_ == 'email':
@@ -37,8 +41,8 @@ def extract_features(df, type_):
 @app.route('/api/logs', methods=['POST'])
 def add_log():
     data = request.json
-    content_type = data.get('contentType')
     content = data.get('content')
+    content_type = data.get('contentType')
     timestamp_str = data.get('timestamp')
 
     if content_type not in ['phishing_url', 'phishing_email']:
